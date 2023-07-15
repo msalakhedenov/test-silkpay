@@ -32,7 +32,7 @@ public class User implements UserDetails {
   private String password;
 
   @OneToMany(mappedBy = "owner")
-  private List<Account> accounts;
+  private List<BankAccount> bankAccounts;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
