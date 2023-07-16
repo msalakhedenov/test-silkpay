@@ -1,4 +1,4 @@
-package com.sm.testsilkpay.model.web;
+package com.sm.testsilkpay.model.web.banking;
 
 import lombok.*;
 

@@ -1,10 +1,10 @@
 package com.sm.testsilkpay.service;
 
 import com.sm.testsilkpay.model.entity.User;
-import com.sm.testsilkpay.model.web.AccountInfoResponse;
-import com.sm.testsilkpay.model.web.CreateAccountRequest;
-import com.sm.testsilkpay.model.web.CreateAccountResponse;
-import com.sm.testsilkpay.model.web.TransferRequest;
+import com.sm.testsilkpay.model.web.banking.AccountInfoResponse;
+import com.sm.testsilkpay.model.web.banking.CreateAccountRequest;
+import com.sm.testsilkpay.model.web.banking.CreateAccountResponse;
+import com.sm.testsilkpay.model.web.banking.TransferRequest;
 
 public interface BankService {
 
