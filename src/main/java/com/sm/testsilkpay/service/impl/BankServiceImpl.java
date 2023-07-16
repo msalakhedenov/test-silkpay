@@ -84,7 +84,7 @@ public class BankServiceImpl implements BankService {
   private User getCurrentUser() {
     String username = authService.getAuthInfo().getPrincipal().toString();
 
-    return (User) userService.loadUserByUsername(username);
+    return userService.findUser(username);
   }
 
 }

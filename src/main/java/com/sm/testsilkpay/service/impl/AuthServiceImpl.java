@@ -24,7 +24,7 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public AuthResponse login(AuthRequest authRequest) {
-    User user = (User) userService.loadUserByUsername(authRequest.getUsername());
+    User user = userService.findUser(authRequest.getUsername());
 
     if (passwordEncoder.matches(authRequest.getPassword(), user.getPassword())) {
       String accessToken  = jwtService.generateAccessToken(user);
@@ -44,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
 
     Claims refreshClaims = jwtService.getRefreshClaims(refreshToken);
     String username      = refreshClaims.getSubject();
-    User   user          = (User) userService.loadUserByUsername(username);
+    User   user          = userService.findUser(username);
     String accessToken   = jwtService.generateAccessToken(user);
 
     return AuthResponse.of(accessToken, null);
@@ -58,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
 
     Claims refreshClaims   = jwtService.getRefreshClaims(refreshToken);
     String username        = refreshClaims.getSubject();
-    User   user            = (User) userService.loadUserByUsername(username);
+    User   user            = userService.findUser(username);
     String accessToken     = jwtService.generateAccessToken(user);
     String newRefreshToken = jwtService.generateRefreshToken(user);
 

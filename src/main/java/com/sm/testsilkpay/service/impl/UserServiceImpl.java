@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User loadUserByUsername(String username) {
+  public User findUser(String username) {
     return userRepository.findByUsername(username)
                          .orElseThrow(() -> new UsernameNotFoundException("Could not find a user with username = " + username));
   }

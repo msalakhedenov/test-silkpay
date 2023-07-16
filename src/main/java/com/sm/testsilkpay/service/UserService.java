@@ -1,10 +1,12 @@
 package com.sm.testsilkpay.service;
 
+import com.sm.testsilkpay.model.entity.User;
 import com.sm.testsilkpay.model.web.auth.AuthRequest;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface UserService extends UserDetailsService {
+public interface UserService {
 
   void createUser(AuthRequest createUserRequest);
+
+  User findUser(String username);
 
 }
