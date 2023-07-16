@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Check(constraints = "balance > 0")
 public class BankAccount {
 
   @Id
@@ -21,7 +22,6 @@ public class BankAccount {
   private Long id;
 
   @Column(nullable = false)
-  @Check(constraints = "balance > 0")
   private BigDecimal balance;
 
   @JoinColumn(name = "user_id", nullable = false)
