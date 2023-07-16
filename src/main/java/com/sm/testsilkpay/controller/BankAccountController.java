@@ -2,7 +2,6 @@ package com.sm.testsilkpay.controller;
 
 import com.sm.testsilkpay.model.web.banking.AccountInfoResponse;
 import com.sm.testsilkpay.model.web.banking.CreateAccountRequest;
-import com.sm.testsilkpay.model.web.banking.CreateAccountResponse;
 import com.sm.testsilkpay.model.web.banking.TransferRequest;
 import com.sm.testsilkpay.service.BankService;
 import lombok.AllArgsConstructor;
@@ -16,7 +15,7 @@ public class BankAccountController {
   private final BankService bankService;
 
   @PostMapping
-  public CreateAccountResponse createAccount(@RequestBody(required = false) CreateAccountRequest createAccountRequest) {
+  public AccountInfoResponse createAccount(@RequestBody(required = false) CreateAccountRequest createAccountRequest) {
     return bankService.createAccount(createAccountRequest);
   }
 

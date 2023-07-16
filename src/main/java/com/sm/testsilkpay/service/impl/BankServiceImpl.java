@@ -6,7 +6,6 @@ import com.sm.testsilkpay.model.entity.BankAccount;
 import com.sm.testsilkpay.model.entity.User;
 import com.sm.testsilkpay.model.web.banking.AccountInfoResponse;
 import com.sm.testsilkpay.model.web.banking.CreateAccountRequest;
-import com.sm.testsilkpay.model.web.banking.CreateAccountResponse;
 import com.sm.testsilkpay.model.web.banking.TransferRequest;
 import com.sm.testsilkpay.repository.BankAccountRepository;
 import com.sm.testsilkpay.service.AuthService;
@@ -29,7 +28,7 @@ public class BankServiceImpl implements BankService {
   private final BankAccountRepository bankAccountRepository;
 
   @Override
-  public CreateAccountResponse createAccount(CreateAccountRequest createAccountRequest) {
+  public AccountInfoResponse createAccount(CreateAccountRequest createAccountRequest) {
     BankAccount account = new BankAccount();
 
     BigDecimal initialBalance = Optional.ofNullable(createAccountRequest)
@@ -44,7 +43,7 @@ public class BankServiceImpl implements BankService {
 
     BankAccount savedAccount = bankAccountRepository.save(account);
 
-    return CreateAccountResponse.of(savedAccount.getId());
+    return AccountInfoResponse.of(savedAccount.getId(), savedAccount.getBalance());
   }
 
   @Override
