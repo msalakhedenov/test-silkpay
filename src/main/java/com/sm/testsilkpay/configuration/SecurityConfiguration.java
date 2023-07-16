@@ -11,7 +11,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
 public class SecurityConfiguration {
@@ -19,7 +20,9 @@ public class SecurityConfiguration {
   private static final String[] publiclyAvailableRoutes = {
       "/api/auth/login",
       "/api/auth/signup",
-      "/api/auth/token"
+      "/api/auth/token",
+      "/swagger-ui/**",
+      "/api/docs/**"
   };
 
   @Bean
@@ -34,7 +37,7 @@ public class SecurityConfiguration {
                .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                .headers(configurer -> configurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                .authorizeHttpRequests(auth -> auth.requestMatchers(publiclyAvailableRoutes).permitAll()
-                                                  .requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
+                                                  .requestMatchers(antMatcher("/h2-console/**")).permitAll()
                                                   .anyRequest().authenticated())
                .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                .build();

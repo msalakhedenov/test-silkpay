@@ -10,6 +10,8 @@ spring:
     console.enabled: true
   datasource:
     url: jdbc:h2:mem:banking
+  autoconfigure: # Because JWT is used we don't need autoconfigured user details service
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
 
 jwt:
   secret:
@@ -18,3 +20,12 @@ jwt:
   expiration:
     access_in_minutes: 5
     refresh_in_days: 14
+
+springdoc:
+  swagger-ui:
+    url: /api/docs
+    path: /swagger-ui
+    configUrl: /api/docs/swagger-config
+  api-docs:
+    path: /api/docs
+    default-produces-media-type: application/json
