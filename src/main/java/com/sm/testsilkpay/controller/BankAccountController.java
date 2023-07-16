@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class BankAccountController {
           @ApiResponse(responseCode = "201", description = "Bank account successfully created")
       }
   )
-  public AccountInfoResponse createAccount(@RequestBody(required = false) CreateAccountRequest createAccountRequest) {
+  public AccountInfoResponse createAccount(@RequestBody(required = false) @Valid CreateAccountRequest createAccountRequest) {
     return bankService.createAccount(createAccountRequest);
   }
 
@@ -58,7 +59,7 @@ public class BankAccountController {
           @ApiResponse(responseCode = "400", description = "Source account doesn't have enough balance to perform transfer")
       }
   )
-  public AccountInfoResponse transfer(@RequestBody TransferRequest transferRequest) {
+  public AccountInfoResponse transfer(@RequestBody @Valid TransferRequest transferRequest) {
     return bankService.transfer(transferRequest);
   }
 

@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class AuthController {
           @ApiResponse(responseCode = "409", description = "Username already taken")
       }
   )
-  public void signup(@RequestBody AuthRequest authRequest) {
+  public void signup(@RequestBody @Valid AuthRequest authRequest) {
     userService.createUser(authRequest);
   }
 
@@ -43,7 +44,7 @@ public class AuthController {
           @ApiResponse(responseCode = "401", description = "Login with invalid credentials")
       }
   )
-  public AuthResponse login(@RequestBody AuthRequest authRequest) {
+  public AuthResponse login(@RequestBody @Valid AuthRequest authRequest) {
     return authService.login(authRequest);
   }
 
@@ -56,7 +57,7 @@ public class AuthController {
           @ApiResponse(responseCode = "403", description = "Invalid refresh token provided")
       }
   )
-  public AuthResponse getAccessToken(@RequestBody RefreshJwtRequest refreshJwtRequest) {
+  public AuthResponse getAccessToken(@RequestBody @Valid RefreshJwtRequest refreshJwtRequest) {
     return authService.getAccessToken(refreshJwtRequest.getRefreshToken());
   }
 
@@ -70,7 +71,7 @@ public class AuthController {
           @ApiResponse(responseCode = "403", description = "Invalid refresh token provided")
       }
   )
-  public AuthResponse getRefreshToken(@RequestBody RefreshJwtRequest refreshJwtRequest) {
+  public AuthResponse getRefreshToken(@RequestBody @Valid RefreshJwtRequest refreshJwtRequest) {
     return authService.refresh(refreshJwtRequest.getRefreshToken());
   }
 
