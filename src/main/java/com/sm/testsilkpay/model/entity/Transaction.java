@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Check;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -29,6 +30,9 @@ public class Transaction {
   @JoinColumn(nullable = false)
   @ManyToOne(optional = false)
   private BankAccount to;
+
+  @Column(nullable = false)
+  private BigDecimal amount;
 
   @CreationTimestamp
   private LocalDateTime timestamp;

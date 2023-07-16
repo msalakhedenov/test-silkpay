@@ -111,6 +111,7 @@ public class BankServiceImpl implements BankService {
     Transaction transaction = new Transaction();
     transaction.setFrom(sourceAccount);
     transaction.setTo(destinationAccount);
+    transaction.setAmount(transferRequest.getAmount());
 
     bankAccountRepository.save(destinationAccount);
 
