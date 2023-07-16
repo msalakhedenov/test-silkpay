@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -31,11 +32,11 @@ public class BankServiceImpl implements BankService {
   public CreateAccountResponse createAccount(CreateAccountRequest createAccountRequest) {
     BankAccount account = new BankAccount();
 
-    BigDecimal initialBalance = createAccountRequest.getInitialBalance();
+    BigDecimal initialBalance = Optional.ofNullable(createAccountRequest)
+                                        .map(CreateAccountRequest::getInitialBalance)
+                                        .orElse(BigDecimal.ZERO);
 
-    if (initialBalance != null) {
-      account.setBalance(initialBalance);
-    }
+    account.setBalance(initialBalance);
 
     User owner = getCurrentUser();
 

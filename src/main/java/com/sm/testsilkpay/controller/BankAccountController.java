@@ -16,7 +16,7 @@ public class BankAccountController {
   private final BankService bankService;
 
   @PostMapping
-  public CreateAccountResponse createAccount(@RequestBody CreateAccountRequest createAccountRequest) {
+  public CreateAccountResponse createAccount(@RequestBody(required = false) CreateAccountRequest createAccountRequest) {
     return bankService.createAccount(createAccountRequest);
   }
 
