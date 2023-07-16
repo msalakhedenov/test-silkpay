@@ -15,7 +15,7 @@ import lombok.ToString;
 public class RefreshJwtRequest {
 
   @Schema(description = "Refresh token", example = "abed1234edf13")
-  @NotBlank
+  @NotBlank(message = "refresh token must be set")
   private String refreshToken;
 
 }

@@ -13,11 +13,11 @@ import lombok.*;
 public class AuthRequest {
 
   @Schema(description = "Username", example = "cool_username")
-  @NotBlank
+  @NotBlank(message = "username must be set")
   private String username;
 
   @Schema(description = "Password", example = "cool_password")
-  @NotBlank
+  @NotBlank(message = "password must be set")
   private String password;
 
 }
