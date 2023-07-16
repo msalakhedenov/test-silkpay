@@ -9,6 +9,7 @@ import com.sm.testsilkpay.service.JwtService;
 import com.sm.testsilkpay.service.UserService;
 import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,7 +25,7 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public AuthResponse login(AuthRequest authRequest) {
-    User user = userService.findUser(authRequest.getUsername());
+    User user = userService.findByUsername(authRequest.getUsername());
 
     if (passwordEncoder.matches(authRequest.getPassword(), user.getPassword())) {
       String accessToken  = jwtService.generateAccessToken(user);
@@ -33,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
       return AuthResponse.of(accessToken, refreshToken);
     }
 
-    throw new AuthException("Invalid username or password");
+    throw new AuthException("Invalid username or password", HttpStatus.UNAUTHORIZED);
   }
 
   @Override
@@ -44,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
 
     Claims refreshClaims = jwtService.getRefreshClaims(refreshToken);
     String username      = refreshClaims.getSubject();
-    User   user          = userService.findUser(username);
+    User   user          = userService.findByUsername(username);
     String accessToken   = jwtService.generateAccessToken(user);
 
     return AuthResponse.of(accessToken, null);
@@ -58,7 +59,7 @@ public class AuthServiceImpl implements AuthService {
 
     Claims refreshClaims   = jwtService.getRefreshClaims(refreshToken);
     String username        = refreshClaims.getSubject();
-    User   user            = userService.findUser(username);
+    User   user            = userService.findByUsername(username);
     String accessToken     = jwtService.generateAccessToken(user);
     String newRefreshToken = jwtService.generateRefreshToken(user);
 

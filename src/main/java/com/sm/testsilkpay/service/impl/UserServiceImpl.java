@@ -1,10 +1,12 @@
 package com.sm.testsilkpay.service.impl;
 
+import com.sm.testsilkpay.exception.AuthException;
 import com.sm.testsilkpay.model.entity.User;
 import com.sm.testsilkpay.model.web.auth.AuthRequest;
 import com.sm.testsilkpay.repository.UserRepository;
 import com.sm.testsilkpay.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,14 +20,20 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void createUser(AuthRequest createUserRequest) {
+    String username = createUserRequest.getUsername();
+
+    if (userRepository.findByUsername(username).isPresent()) {
+      throw new AuthException("Username already exists", HttpStatus.CONFLICT);
+    }
+
     User user = new User();
-    user.setUsername(createUserRequest.getUsername());
+    user.setUsername(username);
     user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
     userRepository.save(user);
   }
 
   @Override
-  public User findUser(String username) {
+  public User findByUsername(String username) {
     return userRepository.findByUsername(username)
                          .orElseThrow(() -> new UsernameNotFoundException("Could not find a user with username = " + username));
   }

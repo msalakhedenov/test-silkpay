@@ -7,6 +7,6 @@ public interface UserService {
 
   void createUser(AuthRequest createUserRequest);
 
-  User findUser(String username);
+  User findByUsername(String username);
 
 }
