@@ -10,7 +10,7 @@ spring:
     console.enabled: true
   datasource:
     url: jdbc:h2:mem:banking
-  autoconfigure: # Because JWT is used we don't need autoconfigured user details service
+  autoconfigure: # Because we have custom user service we don't need autoconfigured user details service...
     exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
 
 jwt:
