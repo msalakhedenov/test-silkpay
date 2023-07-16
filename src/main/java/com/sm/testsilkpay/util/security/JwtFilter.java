@@ -42,7 +42,7 @@ public class JwtFilter extends GenericFilterBean {
   private String extractToken(HttpServletRequest httpServletRequest) {
     String authorization = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
 
-    if (authorization.startsWith(BEARER)) {
+    if (authorization != null && authorization.startsWith(BEARER)) {
       return authorization.substring(BEARER.length());
     }
 
