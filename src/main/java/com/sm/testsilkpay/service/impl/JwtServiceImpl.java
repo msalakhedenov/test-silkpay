@@ -23,6 +23,12 @@ public class JwtServiceImpl implements JwtService {
   private final SecretKey jwtAccessSecretKey;
   private final SecretKey jwtRefreshSecretKey;
 
+  @Value("${jwt.expiration.access_in_minutes}")
+  private int accessTokenExpirationInMinutes;
+
+  @Value("${jwt.expiration.refresh_in_days}")
+  private int refreshTokenExpirationInDays;
+
   public JwtServiceImpl(@Value("${jwt.secret.access}") String jwtAccessSecret,
                         @Value("${jwt.secret.refresh}") String jwtRefreshSecret) {
     jwtAccessSecretKey  = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtAccessSecret));
@@ -31,8 +37,9 @@ public class JwtServiceImpl implements JwtService {
 
   @Override
   public String generateAccessToken(User user) {
-    Instant accessExpirationInstant = LocalDateTime.now().plusMinutes(5).atZone(ZoneId.systemDefault()).toInstant();
-    Date    accessExpirationDate    = Date.from(accessExpirationInstant);
+    Instant accessExpirationInstant = LocalDateTime.now().plusMinutes(accessTokenExpirationInMinutes)
+                                                   .atZone(ZoneId.systemDefault()).toInstant();
+    Date accessExpirationDate = Date.from(accessExpirationInstant);
 
     return Jwts.builder()
                .setSubject(user.getUsername())
@@ -43,8 +50,10 @@ public class JwtServiceImpl implements JwtService {
 
   @Override
   public String generateRefreshToken(User user) {
-    Instant accessExpirationInstant = LocalDateTime.now().plusDays(14).atZone(ZoneId.systemDefault()).toInstant();
-    Date    accessExpirationDate    = Date.from(accessExpirationInstant);
+    Instant accessExpirationInstant = LocalDateTime.now().plusDays(refreshTokenExpirationInDays)
+                                                   .atZone(ZoneId.systemDefault())
+                                                   .toInstant();
+    Date accessExpirationDate = Date.from(accessExpirationInstant);
 
     return Jwts.builder()
                .setSubject(user.getUsername())

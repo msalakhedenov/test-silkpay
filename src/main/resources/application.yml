@@ -11,6 +11,10 @@ spring:
   datasource:
     url: jdbc:h2:mem:banking
 
-jwt.secret:
-  access: HRJjLKV4oOf5AjSEFZIGk4unHBgfymU9BOnsaJUJzkA
-  refresh: 7xd2nIuIp49agBVs5Fb0ebkRr6zlGq0cMkZwvDm_BJ8
+jwt:
+  secret:
+    access: HRJjLKV4oOf5AjSEFZIGk4unHBgfymU9BOnsaJUJzkA
+    refresh: 7xd2nIuIp49agBVs5Fb0ebkRr6zlGq0cMkZwvDm_BJ8
+  expiration:
+    access_in_minutes: 5
+    refresh_in_days: 14
