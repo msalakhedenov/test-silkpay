@@ -74,7 +74,7 @@ public class BankAccountController {
   )
   public AccountInfoResponse setBalance(@PathVariable @Parameter(name = "Account ID") long accountId,
                                         @RequestBody @Valid SetBalanceRequest setBalanceRequest) {
-    return bankService.setBalance(accountId, setBalanceRequest.getNewBalance());
+    return bankService.setBalance(accountId, setBalanceRequest.getBalance());
   }
 
   @PostMapping("/transfer")
