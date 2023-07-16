@@ -9,6 +9,7 @@ import lombok.experimental.FieldNameConstants;
 import org.hibernate.annotations.Check;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Getter
@@ -29,5 +30,8 @@ public class BankAccount {
   @JoinColumn(name = "user_id", nullable = false)
   @ManyToOne(cascade = CascadeType.ALL, optional = false)
   private User owner;
+
+  @OneToMany(cascade = CascadeType.ALL)
+  private List<Transaction> transactions;
 
 }

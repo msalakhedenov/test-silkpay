@@ -3,20 +3,25 @@ package com.sm.testsilkpay.service.impl;
 import com.sm.testsilkpay.exception.BankAccountNotFoundException;
 import com.sm.testsilkpay.exception.InsufficientFundsException;
 import com.sm.testsilkpay.model.entity.BankAccount;
+import com.sm.testsilkpay.model.entity.Transaction;
 import com.sm.testsilkpay.model.entity.User;
 import com.sm.testsilkpay.model.web.banking.AccountInfoResponse;
 import com.sm.testsilkpay.model.web.banking.CreateAccountRequest;
 import com.sm.testsilkpay.model.web.banking.TransferRequest;
 import com.sm.testsilkpay.repository.BankAccountRepository;
+import com.sm.testsilkpay.repository.TransactionRepository;
 import com.sm.testsilkpay.service.AuthService;
 import com.sm.testsilkpay.service.BankService;
 import com.sm.testsilkpay.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -26,6 +31,16 @@ public class BankServiceImpl implements BankService {
   private final UserService userService;
 
   private final BankAccountRepository bankAccountRepository;
+  private final TransactionRepository transactionRepository;
+
+  @Override
+  public List<AccountInfoResponse> findAccounts() {
+    User owner = getCurrentUser();
+
+    return bankAccountRepository.findByOwner(owner).stream()
+                                .map(bankAccount -> AccountInfoResponse.of(bankAccount.getId(), bankAccount.getBalance()))
+                                .collect(Collectors.toList());
+  }
 
   @Override
   public AccountInfoResponse createAccount(CreateAccountRequest createAccountRequest) {
@@ -57,12 +72,31 @@ public class BankServiceImpl implements BankService {
   }
 
   @Override
-  @Transactional
+  @Transactional(isolation = Isolation.READ_COMMITTED)
+  public AccountInfoResponse setBalance(long accountId, BigDecimal balance) {
+    User owner = getCurrentUser();
+
+    BankAccount account = bankAccountRepository.findByIdAndOwner(accountId, owner)
+                                               .orElseThrow(() -> new BankAccountNotFoundException(accountId));
+
+    account.setBalance(balance);
+
+    BankAccount savedAccount = bankAccountRepository.save(account);
+
+    return AccountInfoResponse.of(accountId, savedAccount.getBalance());
+  }
+
+  @Override
+  @Transactional(isolation = Isolation.SERIALIZABLE)
   public AccountInfoResponse transfer(TransferRequest transferRequest) {
     User owner = getCurrentUser();
 
     BankAccount sourceAccount = bankAccountRepository.findByIdAndOwner(transferRequest.getFrom(), owner)
                                                      .orElseThrow(() -> new BankAccountNotFoundException(transferRequest.getFrom()));
+
+    if (transferRequest.getFrom().equals(transferRequest.getTo())) {
+      return AccountInfoResponse.of(transferRequest.getFrom(), sourceAccount.getBalance());
+    }
 
     if (sourceAccount.getBalance().compareTo(transferRequest.getAmount()) < 0) {
       throw new InsufficientFundsException(sourceAccount.getId(), transferRequest.getAmount());
@@ -74,9 +108,15 @@ public class BankServiceImpl implements BankService {
     sourceAccount.setBalance(sourceAccount.getBalance().subtract(transferRequest.getAmount()));
     destinationAccount.setBalance(destinationAccount.getBalance().add(transferRequest.getAmount()));
 
+    Transaction transaction = new Transaction();
+    transaction.setFrom(sourceAccount);
+    transaction.setTo(destinationAccount);
+
     bankAccountRepository.save(destinationAccount);
 
     BankAccount savedSourceAccount = bankAccountRepository.save(sourceAccount);
+
+    transactionRepository.save(transaction);
 
     return AccountInfoResponse.of(savedSourceAccount.getId(), savedSourceAccount.getBalance());
   }

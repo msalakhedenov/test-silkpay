@@ -2,6 +2,7 @@ package com.sm.testsilkpay.controller;
 
 import com.sm.testsilkpay.model.web.banking.AccountInfoResponse;
 import com.sm.testsilkpay.model.web.banking.CreateAccountRequest;
+import com.sm.testsilkpay.model.web.banking.SetBalanceRequest;
 import com.sm.testsilkpay.model.web.banking.TransferRequest;
 import com.sm.testsilkpay.service.BankService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,14 +15,27 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/account")
+@RequestMapping("/api/accounts")
 @SecurityRequirement(name = "JWT")
 @Tag(name = "Bank Account Management", description = "Create accounts, check balance and transfer funds")
 public class BankAccountController {
 
   private final BankService bankService;
+
+  @GetMapping
+  @Operation(
+      summary = "Find list of accounts of the current user",
+      responses = {
+          @ApiResponse(responseCode = "200", description = "List of accounts of the current user")
+      }
+  )
+  public List<AccountInfoResponse> findAccounts() {
+    return bankService.findAccounts();
+  }
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
@@ -47,6 +61,20 @@ public class BankAccountController {
   )
   public AccountInfoResponse getBalance(@PathVariable @Parameter(name = "Account ID") long accountId) {
     return bankService.getBalance(accountId);
+  }
+
+  @PatchMapping("/{accountId}")
+  @Operation(
+      summary = "Set balance of the bank account",
+      description = "Returns ID of the queried account and its balance",
+      responses = {
+          @ApiResponse(responseCode = "200", description = "Account with specified ID exists"),
+          @ApiResponse(responseCode = "404", description = "Account with specified ID doesn't exist")
+      }
+  )
+  public AccountInfoResponse setBalance(@PathVariable @Parameter(name = "Account ID") long accountId,
+                                        @RequestBody @Valid SetBalanceRequest setBalanceRequest) {
+    return bankService.setBalance(accountId, setBalanceRequest.getNewBalance());
   }
 
   @PostMapping("/transfer")
