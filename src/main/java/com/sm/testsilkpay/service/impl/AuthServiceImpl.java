@@ -9,6 +9,8 @@ import com.sm.testsilkpay.service.JwtService;
 import com.sm.testsilkpay.service.UserService;
 import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +63,11 @@ public class AuthServiceImpl implements AuthService {
     String newRefreshToken = jwtService.generateRefreshToken(user);
 
     return AuthResponse.of(accessToken, newRefreshToken);
+  }
+
+  @Override
+  public Authentication getAuthInfo() {
+    return SecurityContextHolder.getContext().getAuthentication();
   }
 
 }

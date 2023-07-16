@@ -9,7 +9,9 @@ import com.sm.testsilkpay.model.web.banking.CreateAccountRequest;
 import com.sm.testsilkpay.model.web.banking.CreateAccountResponse;
 import com.sm.testsilkpay.model.web.banking.TransferRequest;
 import com.sm.testsilkpay.repository.BankAccountRepository;
+import com.sm.testsilkpay.service.AuthService;
 import com.sm.testsilkpay.service.BankService;
+import com.sm.testsilkpay.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +22,13 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class BankServiceImpl implements BankService {
 
+  private final AuthService authService;
+  private final UserService userService;
+
   private final BankAccountRepository bankAccountRepository;
 
   @Override
-  public CreateAccountResponse createAccount(User user, CreateAccountRequest createAccountRequest) {
+  public CreateAccountResponse createAccount(CreateAccountRequest createAccountRequest) {
     BankAccount account = new BankAccount();
 
     BigDecimal initialBalance = createAccountRequest.getInitialBalance();
@@ -32,7 +37,9 @@ public class BankServiceImpl implements BankService {
       account.setBalance(initialBalance);
     }
 
-    account.setOwner(user);
+    User owner = getCurrentUser();
+
+    account.setOwner(owner);
 
     BankAccount savedAccount = bankAccountRepository.save(account);
 
@@ -40,8 +47,10 @@ public class BankServiceImpl implements BankService {
   }
 
   @Override
-  public AccountInfoResponse getBalance(User user, long accountId) {
-    BankAccount account = bankAccountRepository.findByIdAndOwner(accountId, user)
+  public AccountInfoResponse getBalance(long accountId) {
+    User owner = getCurrentUser();
+
+    BankAccount account = bankAccountRepository.findByIdAndOwner(accountId, owner)
                                                .orElseThrow(() -> new BankAccountNotFoundException(accountId));
 
     return AccountInfoResponse.of(accountId, account.getBalance());
@@ -49,8 +58,10 @@ public class BankServiceImpl implements BankService {
 
   @Override
   @Transactional
-  public AccountInfoResponse transfer(User user, TransferRequest transferRequest) {
-    BankAccount sourceAccount = bankAccountRepository.findByIdAndOwner(transferRequest.getFrom(), user)
+  public AccountInfoResponse transfer(TransferRequest transferRequest) {
+    User owner = getCurrentUser();
+
+    BankAccount sourceAccount = bankAccountRepository.findByIdAndOwner(transferRequest.getFrom(), owner)
                                                      .orElseThrow(() -> new BankAccountNotFoundException(transferRequest.getFrom()));
 
     if (sourceAccount.getBalance().compareTo(transferRequest.getAmount()) < 0) {
@@ -68,6 +79,12 @@ public class BankServiceImpl implements BankService {
     BankAccount savedSourceAccount = bankAccountRepository.save(sourceAccount);
 
     return AccountInfoResponse.of(savedSourceAccount.getId(), savedSourceAccount.getBalance());
+  }
+
+  private User getCurrentUser() {
+    String username = authService.getAuthInfo().getPrincipal().toString();
+
+    return (User) userService.loadUserByUsername(username);
   }
 
 }
