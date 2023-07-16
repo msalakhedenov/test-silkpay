@@ -6,8 +6,13 @@ import com.sm.testsilkpay.exception.InsufficientFundsException;
 import com.sm.testsilkpay.model.web.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class ExceptionHandlingRestControllerAdvice {
@@ -28,6 +33,16 @@ public class ExceptionHandlingRestControllerAdvice {
   public ResponseEntity<ErrorMessage> insufficientFundsException(InsufficientFundsException e) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                          .body(ErrorMessage.of(e.getMessage()));
+  }
+
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<Map<String, String>> validationExceptions(MethodArgumentNotValidException e) {
+    Map<String, String> fieldErrors = new HashMap<>();
+
+    e.getAllErrors().forEach(error -> fieldErrors.put(((FieldError) error).getField(), error.getDefaultMessage()));
+
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                         .body(fieldErrors);
   }
 
 }
