@@ -6,6 +6,7 @@ import com.sm.testsilkpay.exception.InsufficientFundsException;
 import com.sm.testsilkpay.model.web.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,8 +24,11 @@ public class ExceptionHandlingRestControllerAdvice {
                          .body(ErrorMessage.of(e.getMessage()));
   }
 
-  @ExceptionHandler(BankAccountNotFoundException.class)
-  public ResponseEntity<ErrorMessage> bankAccountNotFoundException(BankAccountNotFoundException e) {
+  @ExceptionHandler({
+      BankAccountNotFoundException.class,
+      UsernameNotFoundException.class
+  })
+  public ResponseEntity<ErrorMessage> somethingNotFoundException(Exception e) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
                          .body(ErrorMessage.of(e.getMessage()));
   }
