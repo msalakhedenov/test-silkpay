@@ -8,6 +8,8 @@ spring:
       ddl-auto: create-drop
   h2:
     console.enabled: true
+  datasource:
+    url: jdbc:h2:mem:banking
 
 jwt.secret:
   access: HRJjLKV4oOf5AjSEFZIGk4unHBgfymU9BOnsaJUJzkA
