@@ -1,6 +1,4 @@
-## Test SilkPay project
-
----
+# Test SilkPay project
 
 This is the simple banking project for the position of the 
 Java Developer in the SilkPay
