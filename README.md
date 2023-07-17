@@ -9,14 +9,14 @@ How to run the application 🚀:
 
 🪟 Windows:
 ```
-git clone <url> test-silkpay
+git clone https://github.com/msalakhedenov/test-silkpay.git test-silkpay
 cd test-silkpay\
 .\gradlew spring-boot:run
 ```
 
 🐧 Linux:
 ```
-git clone <url> test-silkpay
+git clone https://github.com/msalakhedenov/test-silkpay.git test-silkpay
 cd test-silkpay/
 ./gradlew spring-boot:run
 ```
