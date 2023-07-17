@@ -9,12 +9,14 @@ import com.sm.testsilkpay.service.JwtService;
 import com.sm.testsilkpay.service.UserService;
 import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -25,6 +27,8 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public AuthResponse login(AuthRequest authRequest) {
+    log.debug("login(), request.username: {}", authRequest.getUsername());
+
     User user = userService.findByUsername(authRequest.getUsername());
 
     if (passwordEncoder.matches(authRequest.getPassword(), user.getPassword())) {

@@ -6,11 +6,13 @@ import com.sm.testsilkpay.model.web.auth.AuthRequest;
 import com.sm.testsilkpay.repository.UserRepository;
 import com.sm.testsilkpay.service.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -21,6 +23,8 @@ public class UserServiceImpl implements UserService {
   @Override
   public void createUser(AuthRequest createUserRequest) {
     String username = createUserRequest.getUsername();
+
+    log.debug("createUser(), request.username: {}", username);
 
     if (userRepository.findByUsername(username).isPresent()) {
       throw new AuthException("Username already exists", HttpStatus.CONFLICT);

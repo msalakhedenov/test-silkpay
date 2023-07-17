@@ -14,6 +14,7 @@ import com.sm.testsilkpay.service.AuthService;
 import com.sm.testsilkpay.service.BankService;
 import com.sm.testsilkpay.service.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class BankServiceImpl implements BankService {
@@ -37,6 +39,8 @@ public class BankServiceImpl implements BankService {
   public List<AccountInfoResponse> findAccounts() {
     User owner = getCurrentUser();
 
+    log.debug("findAccounts(), currentUser: {}", owner.getUsername());
+
     return bankAccountRepository.findByOwner(owner).stream()
                                 .map(bankAccount -> AccountInfoResponse.of(bankAccount.getId(), bankAccount.getBalance()))
                                 .collect(Collectors.toList());
@@ -44,6 +48,8 @@ public class BankServiceImpl implements BankService {
 
   @Override
   public AccountInfoResponse createAccount(CreateAccountRequest createAccountRequest) {
+    log.debug("createAccount(), request: {}", createAccountRequest);
+
     BankAccount account = new BankAccount();
 
     BigDecimal initialBalance = Optional.ofNullable(createAccountRequest)
@@ -53,6 +59,8 @@ public class BankServiceImpl implements BankService {
     account.setBalance(initialBalance);
 
     User owner = getCurrentUser();
+
+    log.debug("createAccount(), currentUser: {}", owner.getUsername());
 
     account.setOwner(owner);
 
@@ -65,6 +73,8 @@ public class BankServiceImpl implements BankService {
   public AccountInfoResponse getBalance(long accountId) {
     User owner = getCurrentUser();
 
+    log.debug("getBalance(), accountId: {}, currentUser: {}", accountId, owner.getUsername());
+
     BankAccount account = bankAccountRepository.findByIdAndOwner(accountId, owner)
                                                .orElseThrow(() -> new BankAccountNotFoundException(accountId));
 
@@ -75,6 +85,8 @@ public class BankServiceImpl implements BankService {
   @Transactional(isolation = Isolation.READ_COMMITTED)
   public AccountInfoResponse setBalance(long accountId, BigDecimal balance) {
     User owner = getCurrentUser();
+
+    log.debug("setBalance(), accountId: {}, balance: {}, currentUser: {}", accountId, balance, owner.getUsername());
 
     BankAccount account = bankAccountRepository.findByIdAndOwner(accountId, owner)
                                                .orElseThrow(() -> new BankAccountNotFoundException(accountId));
@@ -90,6 +102,8 @@ public class BankServiceImpl implements BankService {
   @Transactional(isolation = Isolation.SERIALIZABLE)
   public AccountInfoResponse transfer(TransferRequest transferRequest) {
     User owner = getCurrentUser();
+
+    log.debug("transfer(), request: {}, currentUser: {}", transferRequest, owner.getUsername());
 
     BankAccount sourceAccount = bankAccountRepository.findByIdAndOwner(transferRequest.getFrom(), owner)
                                                      .orElseThrow(() -> new BankAccountNotFoundException(transferRequest.getFrom()));
